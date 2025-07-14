@@ -1,59 +1,56 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
-import { componentTagger } from 'lovable-tagger';
+// import { componentTagger } from 'lovable-tagger'; // Commented out for now
 
-// Polyfill imports
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 
-export default defineConfig(({ mode }) => ({
-  base: '/photo-blog-frontend/',
-  server: {
-    host: '::', // Bind to all IPv4 and IPv6 addresses
-    port: 8080, // Custom port
-  },
-  plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
-   define: {
-    global: {}
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      // Ensure 'buffer' is resolved correctly
-      buffer: 'buffer',
+export default defineConfig(({ mode }) => {
+  return {
+    base: '/photo-blog-frontend/',
+    server: {
+      host: '::',
+      port: 8080,
     },
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      // Enable polyfills for Node.js globals
-      define: {
-        global: 'globalThis',
+    plugins: [
+      react(),
+      // Uncomment only if the package is installed
+      // mode === 'development' && componentTagger(),
+    ].filter(Boolean),
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+        buffer: 'buffer',
       },
-      plugins: [
-        NodeGlobalsPolyfillPlugin({
-          buffer: true, // Polyfill Buffer
-        }),
-        NodeModulesPolyfillPlugin(),
-      ],
     },
-  },
-  build: {
-    rollupOptions: {
-      plugins: [
-        // Rollup plugin for Node polyfills
-        rollupNodePolyFill(),
-      ],
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          global: 'globalThis',
+        },
+        plugins: [
+          NodeGlobalsPolyfillPlugin({
+            buffer: true,
+          }),
+          NodeModulesPolyfillPlugin(),
+        ],
+      },
     },
-    commonjsOptions: {
-      transformMixedEsModules: true, // Handle mixed CommonJS/ESM modules
+    build: {
+      rollupOptions: {
+        plugins: [
+          rollupNodePolyFill(),
+        ],
+      },
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
     },
-  },
-  define: {
-    'process.env.NODE_ENV': JSON.stringify(mode || 'development'),
-  },
-}));
+    define: {
+      global: {},
+      'process.env.NODE_ENV': JSON.stringify(mode || 'development'),
+    },
+  };
+});
