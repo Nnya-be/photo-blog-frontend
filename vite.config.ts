@@ -9,6 +9,7 @@ import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfil
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 
 export default defineConfig(({ mode }) => ({
+  base: '/photo-blog-frontend/',
   server: {
     host: '::', // Bind to all IPv4 and IPv6 addresses
     port: 8080, // Custom port
@@ -18,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
    define: {
-    global: {}  
+    global: {}
   },
   resolve: {
     alias: {
